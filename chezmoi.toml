@@ -1,0 +1,23 @@
+# Example ~/.config/chezmoi/chezmoi.toml configuration
+
+# Source directory (default)
+sourceDir = "~/.local/share/chezmoi"
+
+# Encryption: if you want to manage secrets with age or gpg
+encryption = "age"
+[age]
+    identity = "/home/gtoscano/.config/age/keys.txt"
+    recipient = "
+
+# Data can be used in templates
+[data]
+    userName = "Gregorio Toscano"
+    email = "gtoscano@gmail.com"
+
+# If you'd like chezmoi to ignore some files from changes,
+# you can specify patterns here (not mandatory)
+ignore = [
+  ".DS_Store",
+  "Thumbs.db"
+]
+
