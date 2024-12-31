@@ -4,11 +4,11 @@
 sourceDir = "~/.local/share/chezmoi"
 
 # Encryption: if you want to manage secrets with age or gpg
-encryption = "age"
+# encryption = "age"
 
-[age]
-    identity = "~/.config/chezmoi/key.txt"
-    recipient = "age16gcn365p4c8su520yvg62te0c7tt2y6kn6xaqmyer9krkxmgvfds3uz9gj"
+# [age]
+#     identity = "~/.config/chezmoi/key.txt"
+#     recipient = "age16gcn365p4c8su520yvg62te0c7tt2y6kn6xaqmyer9krkxmgvfds3uz9gj"
 
 # Data can be used in templates
 [data]
