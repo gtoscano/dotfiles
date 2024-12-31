@@ -1,0 +1,12 @@
+.config/nvim/undodir
+.config/nvim/pack
+secrets.env
+key.txt.age
+
+{{ if eq .chezmoi.os "darwin" }}
+# Darwin
+{{ end }}
+{{ if eq .chezmoi.os "linux" }}
+# Linux
+
+{{ end }}
