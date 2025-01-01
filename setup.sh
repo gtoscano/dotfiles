@@ -3,9 +3,12 @@
 set -Eeuo pipefail
 
 # If you want debug logs, set DOTFILES_DEBUG=1 in your environment.
+
 if [ "${DOTFILES_DEBUG:-}" ]; then
     set -x
 fi
+
+USER=$(whoami)  # Assign the current username to the USER variable
 
 # Minimal "DotFiles" ASCII logo
 declare -r DOTFILES_LOGO='
