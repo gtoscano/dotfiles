@@ -120,7 +120,6 @@ The following command will launch the test environment using Docker 🐳.
 make docker
 
 # docker run -it -v "$(pwd):/home/$(whoami)/.local/share/chezmoi" debian:bookworm-slim /bin/bash --login
-# gtoscano@machine:~$ 
 ```
 
 Run the [`chezmoi init --apply`](https://www.chezmoi.io/user-guide/setup/#use-a-hosted-repo-to-manage-your-dotfiles-across-multiple-machines) command to verify that the system is set up correctly.
