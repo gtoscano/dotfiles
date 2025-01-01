@@ -57,7 +57,7 @@ To set up the dotfiles run the appropriate snippet in the terminal.
 - Configuration snippet of the Apple Silicon MacOS environment for client macnine:
 
 ```console
-bash -c "$(curl -fsLS http://gtoscano.me/dotfiles/setup.sh)"
+bash -c "$(curl -fsLS https://raw.githubusercontent.com/gtoscano/dotfiles/refs/heads/main/setup.sh)"
 ```
 
 ### 🖥️ `Debian` [![Debian](https://github.com/gtoscano/dotfiles/actions/workflows/ubuntu.yaml/badge.svg)](https://github.com/gtoscano/dotfiles/actions/workflows/ubuntu.yaml)
@@ -65,8 +65,9 @@ bash -c "$(curl -fsLS http://gtoscano.me/dotfiles/setup.sh)"
 - Configuration snippet of the Debian environment for both client and server machine:
 
 ```console
-bash -c "$(wget -qO - http://gtoscano.me/dotfiles/setup.sh)"
+bash -c "$(wget -qO - https://raw.githubusercontent.com/gtoscano/dotfiles/refs/heads/main/setup.sh)"
 ```
+
 
 ### Minimal setup
 

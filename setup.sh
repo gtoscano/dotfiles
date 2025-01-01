@@ -64,7 +64,7 @@ EOF
 
     # 2. Install zsh, git, chezmoi
     echo "Installing zsh, git, chezmoi via Homebrew (non-interactive)..."
-    brew install zsh git chezmoi
+    brew install zsh git
 }
 
 function install_packages_debian() {
@@ -72,8 +72,7 @@ function install_packages_debian() {
     sudo apt-get update -y
 
     echo "Installing zsh, git, chezmoi via apt (non-interactive)..."
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zsh git snapd
-    sudo snap install chezmoi --classic
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zsh git
 }
 
 function set_default_shell_to_zsh() {
@@ -124,28 +123,38 @@ function initialize_os_env() {
 # ChezMoi Setup
 ###############################################################################
 
-function run_chezmoi() {
-    local chezmoi_cmd="chezmoi"
 
-    # We do not prompt for any TTY input, so always use --no-tty
-    # This also means no passphrase-based decrypts during apply.
+function run_chezmoi() {
+    # 1. Create the ./bin directory if it doesn’t exist
+    mkdir -p ./bin
+
+    # 2. Download and install the chezmoi binary into ./bin
+    # The official install script accepts -- -b <DIR> to place the binary in a custom directory.
+    echo "Downloading chezmoi into ./bin..."
+    sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "./bin"
+
+    # 3. Define where the chezmoi binary is located
+    local chezmoi_cmd="./bin/chezmoi"
+
+    # 4. Use non-interactive mode by default (no TTY prompts)
     local no_tty_option="--no-tty"
 
     echo "Initializing dotfiles with chezmoi (non-interactive)..."
     "${chezmoi_cmd}" init "${DOTFILES_REPO_URL}" \
         --force \
         --branch "${BRANCH_NAME}" \
-        --use-builtin-git true \
-        ${no_tty_option}
+        --use-builtin-git true 
+        #\
+        #${no_tty_option}
 
-    # If your dotfiles have age-encrypted files or GPG-encrypted files,
-    # you either need automated decryption steps or remove them in CI environments.
-    # For truly non-interactive mode, we’ll remove them:
-    echo "Removing any encrypted files (non-interactive environment)..."
+    echo "Removing any encrypted files (since we're non-interactive)..."
     find "$(${chezmoi_cmd} source-path)" -type f -name "encrypted_*" -exec rm -fv {} +
 
     echo "Applying dotfiles with chezmoi (non-interactive)..."
     "${chezmoi_cmd}" apply ${no_tty_option}
+
+    # 5. (Optional) Remove the downloaded chezmoi binary if you want a self-cleaning setup
+    # rm -fv "${chezmoi_cmd}"
 }
 
 ###############################################################################
