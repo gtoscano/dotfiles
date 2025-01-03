@@ -1,0 +1,11 @@
+#theme = catppuccin-mocha
+theme = Dracula
+# theme = GruvboxDark
+# font-family = DejaVuSansMono Nerd Font Mono
+font-family = Inconsolata LGC Nerd Font Propo 
+font-size = 16
+background-opacity = 1 
+gtk-titlebar = false
+mouse-hide-while-typing = true
+window-decoration = false
+

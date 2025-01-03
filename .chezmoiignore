@@ -1,5 +1,8 @@
 .config/nvim/undodir
 .config/nvim/pack
+github/*
+not_run_once_before_decrypt-private-key.sh.tmpl
+docker/
 secrets.env
 key.txt.age
 
