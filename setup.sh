@@ -8,8 +8,8 @@ if [ "${DOTFILES_DEBUG:-}" ]; then
     set -x
 fi
 
-USER=$(whoami)  # Assign the current username to the USER variable
 
+declare -r USER=$(whoami)  # Declare USER as readonly and assign the current username
 # Minimal "DotFiles" ASCII logo
 declare -r DOTFILES_LOGO='
  ____        _   _____ _ _           

@@ -8,12 +8,6 @@ install_on_debian() {
     sudo apt-get install -y ansible
 }
 
-install_on_ubuntu() {
-    echo "Installing Ansible on Ubuntu-based system"
-    sudo apt-get update
-    sudo apt-get install -y ansible
-}
-
 install_on_mac() {
     brew install ansible
 }
@@ -23,10 +17,12 @@ case "${OS}" in
     Linux*)
         if grep -q "Debian" /etc/os-release 2>/dev/null; then
             install_on_debian
-        elif [ -f /etc/lsb-release ]; then
-            install_on_ubuntu
+            ansible-playbook ~/.playbooks/install_essentials.yml -i ~/.playbooks/inventory.ini --ask-become-pass
+            ansible-playbook ~/.playbooks/install_flatpaks.yml -i ~/.playbooks/inventory.ini --ask-become-pass --extra-vars "ansible_env.HOME=/home/gtoscano ansible_user=gtoscano"
+            ansible-playbook ~/.playbooks/install_snaps.yml -i ~/.playbooks/inventory.ini  --ask-become-pass
+            ansible-playbook ~/.playbooks/install_docker.yml -i ~/.playbooks/inventory.ini --ask-become-pass 
         else
-            echo "Unsupported Linux distribution"
+            echo "Unsupported distribution"
             exit 1
         fi
         ;;
@@ -39,9 +35,5 @@ case "${OS}" in
         ;;
 esac
 
-ansible-playbook ~/.bootstrap/install_essentials.yml -i ~/.bootstrap/inventory.ini --ask-become-pass
-ansible-playbook ~/.bootstrap/install_docker.yml -i ~/.bootstrap/inventory.ini --ask-become-pass 
-ansible-playbook ~/.bootstrap/install_flatpaks.yml -i ~/.bootstrap/inventory.ini --ask-become-pass --extra-vars "ansible_env.HOME=/home/gtoscano ansible_user=gtoscano"
-ansible-playbook ~/.bootstrap/install_snaps.yml -i ~/.bootstrap/inventory.ini  --ask-become-pass
 
 echo "Ansible installation complete."

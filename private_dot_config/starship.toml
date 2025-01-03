@@ -1,0 +1,426 @@
+continuation_prompt = "[▸▹ ](dimmed white)"
+
+format = """
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$cmd_duration\
+$fill \
+$username\
+$hostname\
+$sudo\
+${custom.os}\
+$singularity\
+$kubernetes\
+$vcsh\
+$fossil_branch\
+$pijul_channel\
+$docker_context\
+$package\
+$c\
+$cmake\
+$cobol\
+$daml\
+$dart\
+$deno\
+$dotnet\
+$elixir\
+$elm\
+$erlang\
+$fennel\
+$golang\
+$guix_shell\
+$shell\
+$haskell\
+$haxe\
+$helm\
+$java\
+$julia\
+$kotlin\
+$gradle\
+$lua\
+$nim\
+$nodejs\
+$ocaml\
+$opa\
+$perl\
+$php\
+$pulumi\
+$purescript\
+$python\
+$raku\
+$rlang\
+$red\
+$ruby\
+$rust\
+$scala\
+$solidity\
+$swift\
+$terraform\
+$vlang\
+$vagrant\
+$zig\
+$buf\
+$conda\
+$meson\
+$spack\
+$memory_usage\
+$aws\
+$gcloud\
+$openstack\
+$azure\
+$crystal\
+$status\
+$localip\
+${os}\
+${os.symbols}\
+$jobs\
+$line_break\
+$character"""
+
+[fill]
+symbol = " "
+
+[custom.os]
+command = """ # This only works when fish is the shell 
+switch (uname -s)
+    case Darwin
+        echo " "
+    case Linux
+        echo " "
+    case FreeBSD
+        echo " "
+    case '*'
+        echo "❓"
+end
+"""
+when = true
+format = " [$output](bold green) "
+disabled = false
+
+[directory]
+style = "blue"
+read_only = " 󰌾"
+
+truncation_length = 2
+truncation_symbol = "□ "
+
+[character]
+success_symbol = "[🚀❯](purple)"
+error_symbol = "[💥❯](red)"
+vimcmd_symbol = "[❮](green)"
+
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "yellow"
+
+[jobs]
+format = "[$symbol$number]($style) "
+style = "white"
+symbol = "[▶](blue italic)"
+
+[localip]
+ssh_only = true
+format = "·[$localipv4](dimmed magenta)"
+disabled = false
+
+[username]
+style_user = "bright-yellow bold italic"
+style_root = "purple bold italic"
+format = " [$user]($style)"
+disabled = false
+show_always = true 
+
+[sudo]
+format = "[$symbol]($style)"
+style = "bold italic bright-purple"
+symbol = "#"
+disabled = false
+
+
+[aws]
+symbol = "  "
+
+[bun]
+format = "via [$symbol]($style)"
+
+[buf]
+symbol = " "
+format = "via [$symbol]($style)"
+
+[c]
+symbol = " "
+format = "via [$symbol]($style)"
+
+[cmake]
+format = "via [$symbol]($style)"
+
+[cobol]
+format = "via [$symbol]($style)"
+
+[conda]
+symbol = " "
+format = "via [$symbol]($style)"
+
+
+[crystal]
+symbol = " "
+format = "via [$symbol]($style)"
+
+[daml]
+format = "via [$symbol]($style)"
+
+[dart]
+symbol = " "
+format = "via [$symbol]($style)"
+
+[docker_context]
+symbol = " "
+
+[deno]
+format = "via [$symbol]($style)"
+
+[dotnet]
+format = "via [$symbol(🎯 $tfm )]($style)"
+
+[elixir]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[elm]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[erlang]
+format = 'via [$symbol]($style)'
+
+[fennel]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[fossil_branch]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[git_branch]
+format = "[$branch]($style)"
+style = "bright-black"
+
+[git_status]
+format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
+style = "cyan"
+conflicted = "​"
+untracked = "​"
+modified = "​"
+staged = "​"
+renamed = "​"
+deleted = "​"
+stashed = "≡"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bright-black"
+
+[git_commit]
+tag_symbol = '  '
+
+[gleam]
+format = 'via [$symbol]($style)'
+
+[golang]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[guix_shell]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[gradle]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[haskell]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[haxe]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[helm]
+format = 'via [$symbol]($style)'
+
+[hostname]
+ssh_symbol = " "
+format = "[@$hostname]($style)"
+style = "bold blue"
+ssh_only = true 
+
+[java]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[julia]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[kotlin]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[lua]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[memory_usage]
+symbol = "󰍛 "
+
+[meson]
+symbol = "󰔷 "
+format = 'via [$symbol]($style)'
+
+[nim]
+symbol = "󰆥 "
+format = 'via [$symbol]($style)'
+
+[nix_shell]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+
+[nodejs]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[ocaml]
+symbol = " "
+format = 'via [$symbol(\($switch_indicator$switch_name\) )]($style)'
+
+[opa]
+format = 'via [$symbol]($style)'
+
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+AlmaLinux = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Kali = " "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+RockyLinux = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Void = " "
+Windows = "󰍲 "
+
+[package]
+symbol = "󰏗 "
+
+[perl]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[php]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[pijul_channel]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[pulumi]
+format = 'via [$symbol$stack]($style)'
+
+[purescript]
+format = 'via [$symbol]($style)'
+
+[python]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[quarto]
+format = 'via [$symbol]($style)'
+
+[raku]
+format = 'via [$symbol]($style)'
+
+[red]
+format = 'via [$symbol]($style)'
+
+[rlang]
+symbol = "󰟔 "
+format = 'via [$symbol]($style)'
+
+[ruby]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[rust]
+symbol = "󱘗 "
+format = 'via [$symbol]($style)'
+
+[solidity]
+format = 'via [$symbol]($style)'
+
+[shell]
+fish_indicator = '󰈺 '
+powershell_indicator = '_'
+unknown_indicator = 'mystery shell'
+style = 'cyan bold'
+disabled = false
+
+[typst]
+format = 'via [$symbol]($style)'
+
+[scala]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[swift]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+[vagrant]
+format = 'via [$symbol]($style)'
+
+[vlang]
+format = 'via [$symbol]($style)'
+
+[zig]
+symbol = " "
+format = 'via [$symbol]($style)'
+
+
