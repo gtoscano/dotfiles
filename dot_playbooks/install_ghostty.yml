@@ -1,0 +1,122 @@
+# ansible-playbook ~/.bootstrap/install_docker.yml -i ~/.bootstrap/inventory.ini --ask-become-pass 
+# For localhost:
+#   ansible-playbook -i localhost, -c local install_docker.yml --ask-become-pass
+# Another option for localhost is to use a localhost_inventory.yml
+#   ansible-playbook -i localhost_inventory.yml install_docker.yml --ask-become-pass
+#
+# For networked machines (using inventory.yml)
+#   ansible-playbook -i linux_inventory.yml install_docker.yml --ask-become-pass
+
+# Note:
+#   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+#
+#
+# Validation
+#
+#    Confirm Ghostty Installation:
+#        Check if ghostty is installed and accessible in the PATH:
+#
+#    ghostty --version
+#
+# Verify Default Terminal:
+#
+#    Confirm that ghostty is set as the default terminal:
+#
+#    update-alternatives --query x-terminal-emulator
+#
+
+
+---
+- name: Install essential packages and Ghostty
+  hosts: all
+  become: true
+  vars:
+    user: "{{ ansible_user }}"
+    home_dir: "/home/{{ ansible_user }}"
+    install_path: "{{ home_dir }}/.local"
+    bin_path: "{{ home_dir }}/.local/bin"
+    repo_url: "https://github.com/ghostty-org/ghostty.git"
+  tasks:
+
+    - name: Update APT cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - git
+          - fish
+          - zsh
+          - fzf
+          - libgtk-4-dev
+          - libadwaita-1-dev
+        state: present
+
+    - name: Install Snap packages
+      ansible.builtin.command: snap install {{ item.name }} {{ item.extra_args | default('') }}
+      loop:
+        - { name: "zig", extra_args: "--classic --beta" }
+
+    - name: Check if Ghostty binary exists
+      ansible.builtin.stat:
+        path: "{{ bin_path }}/ghostty"
+      register: ghostty_binary
+
+    - name: Clean up temporary files
+      ansible.builtin.file:
+        path: "{{ home_dir }}/ghostty"
+        state: absent
+      when: not ghostty_binary.stat.exists
+
+    - name: Clone Ghostty repository
+      become: false
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ home_dir }}/ghostty"
+        version: main
+      when: not ghostty_binary.stat.exists
+
+
+    - name: Build Ghostty using Zig
+      become: false
+      shell: |
+        /snap/bin/zig build -p "{{ install_path }}" -Doptimize=ReleaseFast
+      args:
+        chdir: "{{ home_dir }}/ghostty"
+      when: not ghostty_binary.stat.exists
+
+    - name: Confirm Ghostty binary exists
+      ansible.builtin.shell: test -f "{{ bin_path }}/ghostty"
+      register: ghostty_check
+      changed_when: false
+      failed_when: ghostty_check.rc != 0
+    
+    - name: Debug Ghostty binary path
+      ansible.builtin.debug:
+        msg: "Ghostty binary exists at {{ bin_path }}/ghostty"
+      when: ghostty_check.rc == 0
+
+    - name: Check if Ghostty is already registered as x-terminal-emulator
+      become: true
+      ansible.builtin.command: >
+        update-alternatives --display x-terminal-emulator
+      register: x_terminal_emulator_status
+      changed_when: false
+
+    - name: Register Ghostty as x-terminal-emulator if not already registered
+      become: true
+      ansible.builtin.command: >
+        update-alternatives
+        --install /usr/bin/x-terminal-emulator
+        x-terminal-emulator
+        {{ bin_path }}/ghostty
+        50
+      when:  bin_path + '/ghostty' not in x_terminal_emulator_status.stdout
+
+    - name: Set Ghostty as the default x-terminal-emulator
+      become: true
+      ansible.builtin.command: >
+        update-alternatives
+        --set x-terminal-emulator
+        {{ bin_path }}/ghostty

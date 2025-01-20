@@ -1,0 +1,90 @@
+# ansible-playbook ~/.bootstrap/install_docker.yml -i ~/.bootstrap/inventory.ini --ask-become-pass 
+# For localhost:
+#   ansible-playbook -i localhost, -c local install_docker.yml --ask-become-pass
+# Another option for localhost is to use a localhost_inventory.yml
+#   ansible-playbook -i localhost_inventory.yml install_docker.yml --ask-become-pass
+#
+# For networked machines (using inventory.yml)
+#   ansible-playbook -i linux_inventory.yml install_docker.yml --ask-become-pass
+
+# Note:
+#   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+#
+# Validation
+#
+#    Verify Installation:
+#        After running the playbook, confirm Starship is installed:
+#        starship --version
+#
+#    Check PATH:
+#       Ensure /usr/local/bin is included in the system PATH
+#
+---
+- name: Install and Configure Starship Prompt on Linux
+  hosts: all
+  become: true
+  vars:
+    starship_temp_dir: "/tmp/starship_install"
+
+  tasks:
+    - name: Ensure required packages are installed
+      ansible.builtin.apt:
+        name: curl
+        state: present
+
+    - name: Create temporary directory for Starship installation
+      ansible.builtin.file:
+        path: "{{ starship_temp_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Download and run Starship install script
+      ansible.builtin.shell: |
+        curl -sS https://starship.rs/install.sh | sh -s -- --yes --bin-dir {{ starship_temp_dir }}
+      args:
+        creates: "{{ starship_temp_dir }}/starship"
+      environment:
+        CARGO_HOME: "{{ starship_temp_dir }}/cargo"
+      register: starship_install
+      ignore_errors: yes
+
+    - name: Check if Starship binary exists
+      ansible.builtin.stat:
+        path: "{{ starship_temp_dir }}/starship"
+      register: starship_binary
+
+    - name: Fail if Starship installation failed
+      ansible.builtin.fail:
+        msg: "Starship installation script failed."
+      when: not starship_binary.stat.exists
+
+    - name: Move Starship binary to /usr/local/bin/
+      ansible.builtin.copy:
+        src: "{{ starship_temp_dir }}/starship"
+        dest: "/usr/local/bin/starship"
+        remote_src: true
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Ensure /usr/local/bin is in PATH for all users
+      ansible.builtin.lineinfile:
+        path: /etc/profile
+        regexp: '^export PATH=.*:/usr/local/bin'
+        line: 'export PATH=$PATH:/usr/local/bin'
+        state: present
+
+    - name: Verify Starship installation
+      ansible.builtin.command: /usr/local/bin/starship --version
+      register: starship_version
+      changed_when: false
+      failed_when: starship_version.rc != 0
+
+    - name: Display installed Starship version
+      ansible.builtin.debug:
+        msg: "Starship installed successfully: {{ starship_version.stdout }}"
+
+    - name: Clean up temporary Starship installation files
+      ansible.builtin.file:
+        path: "{{ starship_temp_dir }}"
+        state: absent

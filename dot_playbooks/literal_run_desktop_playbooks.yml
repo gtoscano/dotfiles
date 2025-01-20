@@ -1,0 +1,28 @@
+# ansible-playbook -i net_inventory.yml run_desktop_playbooks.yml --ask-become-pass
+# Requirements:
+#
+#   su -
+#   usermod -a -G groupname username ( usermod -a -G sudo gtoscano )
+#   apt install -y sudo python3
+#   echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/99-user
+# For localhost:
+#   ansible-playbook -i localhost, -c local install_docker.yml --ask-become-pass
+# Another option for localhost is to use a localhost_inventory.yml
+#   ansible-playbook -i localhost_inventory.yml install_docker.yml --ask-become-pass
+#
+# For networked machines (using inventory.yml)
+#   ansible-playbook -i linux_inventory.yml install_docker.yml --ask-become-pass
+
+# Note:
+#   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+#
+---
+- import_playbook: install_essentials.yml
+- import_playbook: install_neovim.yml
+- import_playbook: install_snaps.yml
+- import_playbook: install_flatpaks.yml
+- import_playbook: install_docker.yml
+- import_playbook: install_cloudflared.yml
+- import_playbook: install_ghostty.yml
+- import_playbook: install_regolith_bookworm.yml
+- import_playbook: install_starship.yml

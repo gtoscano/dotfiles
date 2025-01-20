@@ -1,0 +1,93 @@
+# Requirements:
+#   su -
+#
+#   echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/99-user
+#   echo "gtoscano ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers.d/99-gtoscano
+#    - name: Configure passwordless sudo for user
+#      ansible.builtin.lineinfile:
+#        path: /etc/sudoers.d/99-{{ user }}
+#        create: yes
+#        mode: '0440'
+#        line: "{{ user }} ALL=(ALL) NOPASSWD: ALL"
+#   usermod -a -G groupname username ( usermod -a -G sudo gtoscano )
+#   apt install -y sudo python3
+# For localhost:
+#   ansible-playbook -i localhost, -c local install_docker.yml --ask-become-pass
+# Another option for localhost is to use a localhost_inventory.yml
+#   ansible-playbook -i localhost_inventory.yml install_docker.yml --ask-become-pass
+#
+# For networked machines (using inventory.yml)
+#   ansible-playbook -i linux_inventory.yml install_docker.yml --ask-become-pass
+
+# Note:
+#   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+#
+
+---
+- name: Install Regolith Desktop on Debian Bookworm
+  hosts: all 
+  become: true
+  tasks:
+    - name: Update APT cache
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: Install packages
+      ansible.builtin.apt:
+        name:
+          - gnupg
+          - wget
+        state: present
+
+    - name: Ensure keyrings directory exists
+      file:
+        path: /usr/share/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Regolith GPG key
+      get_url:
+        url: https://regolith-desktop.org/regolith.key
+        dest: /tmp/regolith.key
+        mode: '0644'
+        validate_certs: yes
+
+    - name: Remove existing Regolith GPG keyring if present
+      file:
+        path: /usr/share/keyrings/regolith-archive-keyring.gpg
+        state: absent
+
+    - name: Convert and install Regolith GPG keyring
+      command: gpg --dearmor -o /usr/share/keyrings/regolith-archive-keyring.gpg /tmp/regolith.key
+      notify: Remove temporary GPG key file
+
+    - name: Add Regolith repository
+      apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/regolith-archive-keyring.gpg] https://regolith-desktop.org/release-3_2-debian-bookworm-amd64 bookworm main"
+        state: present
+        filename: "regolith"
+
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Regolith packages
+      apt:
+        name:
+          - regolith-desktop
+          - regolith-session-flashback
+          - regolith-look-lascaille
+          - fonts-nerd-font-inconsolatalgc
+          - fonts-nerd-font-dejavusansmono
+          - fonts-nerd-font-firacode
+          - fonts-nerd-font-firacode
+          - fonts-nerd-font-ubuntu
+          - fonts-nerd-font-ubuntumono
+          - fonts-nerd-font-bitstreamverasansmono
+        state: present
+        update_cache: yes
+
+  handlers:
+    - name: Remove temporary GPG key file
+      file:
+        path: /tmp/regolith.key
+        state: absent

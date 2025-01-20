@@ -1,0 +1,70 @@
+# ansible-playbook ~/.bootstrap/install_docker.yml -i ~/.bootstrap/inventory.ini --ask-become-pass 
+# For localhost:
+#   ansible-playbook -i localhost, -c local install_docker.yml --ask-become-pass
+# Another option for localhost is to use a localhost_inventory.yml
+#   ansible-playbook -i localhost_inventory.yml install_docker.yml --ask-become-pass
+#
+# For networked machines (using inventory.yml)
+#   ansible-playbook -i linux_inventory.yml install_docker.yml --ask-become-pass
+
+# Note:
+#   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+#
+#
+# Validation
+#     Verify Flathub Repository: After running the playbook, verify the Flathub repository has been added for the user:
+
+#       flatpak --user remotes
+
+#     Check Installed Packages: List installed Flatpak packages for the user:
+
+#         flatpak --user list
+
+---
+- name: Install Flatpak packages
+  hosts: all
+  become: false
+  vars:
+    user: "{{ ansible_user }}"
+    home_dir: "/home/{{ user }}"
+    flatpak_user_dir: "{{ home_dir }}/.local/share/flatpak"
+  tasks:
+    - name: Ensure Flatpak is installed
+      become: true
+      ansible.builtin.apt:
+        name: flatpak
+        state: present
+
+    - name: Install Flatpak plugin for GNOME Software (optional, improves GUI integration)
+      become: true
+      ansible.builtin.apt:
+        name: gnome-software-plugin-flatpak
+        state: present
+
+    - name: Add Flathub repository for the user
+      ansible.builtin.command: >
+        flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+      args:
+        creates: "{{ flatpak_user_dir }}/repo/flathub"
+      become_user: "{{ user }}"
+
+    - name: Install Flatpak packages for the user
+      ansible.builtin.command: >
+        flatpak --user install -y flathub {{ item }}
+      loop:
+        - com.bitwarden.desktop
+        - com.belmoussaoui.Decoder
+        - com.github.marktext.marktext
+        - com.github.jeromerobert.pdfarranger
+        - com.google.Chrome
+        - com.nextcloud.desktopclient.nextcloud
+        - com.obsproject.Studio
+        - io.dbeaver.DBeaverCommunity
+        - com.sublimetext.three
+        - org.flameshot.Flameshot
+        - org.videolan.VLC
+        - org.gimp.GIMP
+        - org.gnome.meld
+        - us.zoom.Zoom
+        - org.libreoffice.LibreOffice
+      become_user: "{{ user }}"

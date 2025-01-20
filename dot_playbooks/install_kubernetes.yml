@@ -1,0 +1,97 @@
+# ansible-playbook ~/.bootstrap/install_kubernetes.yml -i ~/.bootstrap/inventory_kubernetes.ini --ask-become-pass
+# verify cluster
+# on the master node run:
+# kubectl get nodes
+#
+---
+- name: Kubernetes Cluster Setup
+  hosts: all
+  become: true
+  tasks:
+    # Ensure necessary packages are installed
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+        update_cache: yes
+
+    # Add Kubernetes apt key
+    - name: Add Kubernetes GPG key
+      ansible.builtin.command: curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
+    # Add Kubernetes repository
+    - name: Add Kubernetes apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+        state: present
+        filename: kubernetes
+
+    # Install Kubernetes components
+    - name: Install kubeadm, kubelet, and kubectl
+      ansible.builtin.apt:
+        name:
+          - kubeadm
+          - kubelet
+          - kubectl
+        state: present
+
+    # Hold Kubernetes packages
+    - name: Mark Kubernetes packages on hold
+      ansible.builtin.shell: apt-mark hold kubeadm kubelet kubectl
+
+    # Configure container runtime (containerd)
+    - name: Install containerd
+      ansible.builtin.apt:
+        name: containerd
+        state: present
+
+    - name: Configure containerd
+      ansible.builtin.shell: |
+        mkdir -p /etc/containerd
+        containerd config default | tee /etc/containerd/config.toml
+        systemctl restart containerd
+
+    # Enable required kernel modules and settings
+    - name: Enable br_netfilter module
+      ansible.builtin.shell: modprobe br_netfilter
+
+    - name: Configure sysctl for Kubernetes networking
+      ansible.builtin.copy:
+        content: |
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.bridge.bridge-nf-call-iptables = 1
+        dest: /etc/sysctl.d/k8s.conf
+      notify: reload_sysctl
+
+  handlers:
+    - name: reload_sysctl
+      ansible.builtin.command: sysctl --system
+
+- name: Kubernetes Master Node Initialization
+  hosts: masters
+  become: true
+  tasks:
+    - name: Initialize the Kubernetes cluster
+      ansible.builtin.command: kubeadm init --pod-network-cidr=10.244.0.0/16
+      register: kubeadm_init
+
+    - name: Save kubeconfig for regular user
+      ansible.builtin.command: |
+        mkdir -p /home/{{ ansible_user }}/.kube
+        cp -i /etc/kubernetes/admin.conf /home/{{ ansible_user }}/.kube/config
+        chown {{ ansible_user }}:{{ ansible_user }} /home/{{ ansible_user }}/.kube/config
+
+    - name: Install Flannel networking
+      ansible.builtin.command: |
+        kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+- name: Kubernetes Worker Node Setup
+  hosts: workers
+  become: true
+  tasks:
+    - name: Join the worker node to the cluster
+      ansible.builtin.command: "{{ hostvars['master'].kubeadm_init.stdout_lines | join(' ') }}"

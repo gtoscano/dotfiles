@@ -1,0 +1,93 @@
+# ansible-playbook -i macos_inventory.yml install_macos.yml
+---
+- name: Install packages on macOS remotely
+  hosts: remote_macos
+  become: no
+  vars:
+    brew_packages:
+      - alacritty
+      - bat
+      - chezmoi
+      - cask
+      - cloudflared
+      - fd
+      - fish
+      - fontconfig
+      - flameshot
+      - freetype
+      - fzf
+      - gettext
+      - gh
+      - glances
+      - htop
+      - lua
+      - lz4
+      - lzo
+      - llvm
+      - nushell
+      - readline
+      - ripgrep
+      - sketchybar
+      - sqlite
+      - starship
+      - tmux
+      - tree-sitter
+      - wireguard-tools
+      - xclip
+      - xorgproto
+      - xsel
+      - yazi
+      - yadm
+      - zoxide
+    brew_casks:
+      - bitwarden
+      - cloudflare-warp
+      - docker
+      - discord
+      - font-inconsolata-lgc-nerd-font
+      - font-dejavu-sans-mono-nerd-font
+      - font-hack-nerd-font
+      - font-ubuntu-nerd-font
+      - gimp
+      - google-chrome
+      - libreoffice
+      - nextcloud
+      - sf-symbols
+      - sublime-text
+      - skype
+      - whatsapp
+      - zoom
+      - nikitabobko/tap/aerospace
+
+  tasks:
+    - name: Determine Homebrew directory
+      set_fact:
+        homebrew_dir: "/opt/homebrew"
+      when: ansible_architecture == "arm64"
+
+    - name: Set Homebrew directory for Intel Macs
+      set_fact:
+        homebrew_dir: "/usr/local"
+      when: ansible_architecture != "arm64"
+
+    - name: Check if ansible_user can write to the Homebrew directory
+      shell: "[[ -w {{ homebrew_dir }} ]] && echo 'Writable' || echo 'Not writable'"
+      register: brew_permission_check
+      changed_when: false
+
+    - name: Fail if Homebrew directory is not writable
+      fail:
+        msg: "User {{ ansible_user }} does not have write permissions for {{ homebrew_dir }}. Please adjust permissions or use a different user."
+      when: '"Not writable" in brew_permission_check.stdout'
+
+    - name: Check if Homebrew is installed
+      command: /usr/bin/which brew
+      register: brew_check
+      ignore_errors: yes
+
+    - name: Install Homebrew
+      shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      when: brew_check.rc != 0
+
+    - name: Ensure Homebrew is in PATH
+      shell: echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile && eval "$(/opt/homebrew/bin/brew shell

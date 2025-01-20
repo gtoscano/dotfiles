@@ -1,0 +1,104 @@
+# 
+# ansible-playbook ~/.bootstrap/install_ghostty.yml -i ~/.bootstrap/inventory_no_root.ini --ask-become-pass
+# ansible-playbook ~/.bootstrap/install_ghostty.yml -i ~/.bootstrap/inventory.ini --ask-become-pass
+---
+- name: Install essential packages
+  hosts: localhost
+  remote_user: gtoscano
+  become: false 
+  vars:
+    user: gtoscano
+    home_dir: "/home/{{ ansible_user }}"
+    install_path: "{{ home_dir }}/.local"
+    bin_path: "{{ home_dir }}/.local/bin"
+    repo_url: "https://github.com/ghostty-org/ghostty.git"
+  tasks:
+
+    - name: Update APT cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install packages
+      become: true
+      ansible.builtin.apt:
+        name:
+          - git
+          - fish
+          - zsh
+          - fzf
+          - libgtk-4-dev
+          - libadwaita-1-dev
+        state: present
+
+    - name: Install Snap packages
+      become: true
+      ansible.builtin.command: snap install {{ item.name }} {{ item.extra_args | default('') }}
+      loop:
+        - { name: "zig", extra_args: "--classic --beta" }
+
+
+    - name: Clone ghostty repository
+      become: false 
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ home_dir }}/ghostty"   # adjust if you want another location
+        version: main
+
+    - name: Build ghostty using Zig
+      become: false 
+      shell: |
+        cd "{{ home_dir }}/ghostty"
+        zig build -p "{{ install_path }}" -Doptimize=ReleaseFast
+      args:
+        chdir: "{{ home_dir }}/ghostty"
+      # If the build might take a while, consider adding "executable: /bin/bash" or a longer timeout.
+
+    - name: Change shell to zsh
+      become: false 
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        shell: /usr/bin/zsh
+
+    - name: Ensure ~/.local/bin is in PATH
+      become: false 
+      lineinfile:
+        path: "{{ home_dir }}/.zshrc"
+        insertafter: EOF
+        line: "export PATH=\"{{ bin_path }}:$PATH\""
+        create: yes
+      # If using zsh or another shell, change this file accordingly.
+      #
+
+    - name: Source .zshrc (optional immediate effect for current session)
+      become: false 
+      shell: source "{{ home_dir }}/.zshrc"
+      args:
+        executable: /bin/zsh
+      register: source_zshrc
+
+    - name: Confirm ghostty is in PATH (debug)
+      shell: which ghostty
+      register: ghostty_which
+      changed_when: false
+
+    - debug:
+        msg: "ghostty is found at: {{ ghostty_which.stdout }}"
+
+    - name: Register ghostty as x-terminal-emulator
+      become: true
+      ansible.builtin.command: >
+        update-alternatives
+        --install /usr/bin/x-terminal-emulator
+        x-terminal-emulator
+        /home/gtoscano/.local/bin/ghostty
+        50
+      args:
+        creates: /var/lib/dpkg/alternatives/x-terminal-emulator
+
+    - name: Set ghostty as the default x-terminal-emulator
+      become: true
+      command: >
+        update-alternatives
+        --set x-terminal-emulator
+        /home/gtoscano/.local/bin/ghostty

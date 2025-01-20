@@ -1,0 +1,78 @@
+# ansible-playbook ~/.bootstrap/install_docker.yml -i ~/.bootstrap/inventory.ini --ask-become-pass 
+# For localhost:
+#   ansible-playbook -i localhost, -c local install_docker.yml --ask-become-pass
+# Another option for localhost is to use a localhost_inventory.yml
+#   ansible-playbook -i localhost_inventory.yml install_docker.yml --ask-become-pass
+#
+# For networked machines (using inventory.yml)
+#   ansible-playbook -i linux_inventory.yml install_docker.yml --ask-become-pass
+
+# Note:
+#   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+---
+- name: Set up Docker on Debian
+  hosts: all
+  become: true
+  vars:
+    version_code_name: bookworm 
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install required dependencies for Docker GPG key
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+
+    - name: Create keyrings directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Add Docker repository to APT sources
+      ansible.builtin.apt_repository:
+        #repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_lsb.codename }} stable"
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ version_code_name }} stable"
+        state: present
+        filename: docker
+
+    - name: Update apt cache after adding Docker repo
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Docker packages
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Ensure Docker group exists
+      ansible.builtin.group:
+        name: docker
+        state: present
+
+    - name: Add current user to Docker group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+
+    - name: Notify user about Docker group membership
+      debug:
+        msg: >
+          User {{ ansible_user }} has been added to the Docker group. Please log out and log back in
+          for the group membership to take effect.
