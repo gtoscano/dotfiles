@@ -1,0 +1,262 @@
+continuation_prompt = "[▸▹ ](dimmed white)"
+
+format = """
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$cmd_duration\
+$fill \
+$username\
+$hostname\
+$sudo\
+${custom.os}\
+$shell\
+$kubernetes\
+$docker_context\
+$localip\
+$line_break\
+$character"""
+
+[fill]
+symbol = " "
+
+[custom.os]
+command = """ # This only works with fish shell 
+
+set kernel_name (uname -s)
+
+switch $kernel_name
+    case "Linux"
+        set distro_name (grep -oP '(?<=^ID=).*' /etc/os-release)
+        switch $distro_name
+            case "alpine"
+                echo " "
+            case "amzn"
+                echo " "
+            case "android"
+                echo " "
+            case "arch"
+                echo " "
+            case "centos"
+                echo " "
+            case "debian"
+                echo " "
+            case "fedora"
+                echo " "
+            case "garuda"
+                echo "󰛓 "
+            case "gentoo"
+                echo " "
+            case "kali"
+                echo " "
+            case "manjaro"
+                echo " "
+            case "linuxmint"
+                echo " "
+            case "nixos"
+                echo " "
+            case "ol"
+                echo "󰌷 "
+            case "pop"
+                echo " "
+            case "raspbian"
+                echo " "
+            case "rhel"
+                echo " "
+            case "rocky"
+                echo " "
+            case "ubuntu"
+                echo " "
+            case "*"
+                echo " "  # Default Linux icon
+        end
+    case "Darwin"
+        echo " "  # macOS Icon
+    case "FreeBSD"
+        echo " "  # FreeBSD Icon
+    case "OpenBSD"
+        echo " "  # OpenBSD Icon
+    case "NetBSD"
+        echo " "  # NetBSD Icon
+    case "DragonFly"
+        echo " "  # DragonFlyBSD Icon
+    case "*"
+        echo "❓"
+end
+"""
+when = true
+format = " [$output](bold green) "
+disabled = false
+
+#[custom]# For POSIX shell, use this script
+#command = """#!/bin/sh 
+#kernel_name=$(uname -s)
+#
+#case "$kernel_name" in
+#    "Linux")
+#        # Extract the Linux distribution ID
+#        distro_name=$(grep ^ID= /etc/os-release | cut -d'=' -f2 | tr -d '"')
+#        case "$distro_name" in
+#            "alpine")
+#                echo " "
+#                ;;
+#            "amzn")
+#                echo " "
+#                ;;
+#            "android")
+#                echo " "
+#                ;;
+#            "arch")
+#                echo " "
+#                ;;
+#            "centos")
+#                echo " "
+#                ;;
+#            "debian")
+#                echo " "
+#                ;;
+#            "fedora")
+#                echo " "
+#                ;;
+#            "garuda")
+#                echo "󰛓 "
+#                ;;
+#            "gentoo")
+#                echo " "
+#                ;;
+#            "kali")
+#                echo " "
+#                ;;
+#            "manjaro")
+#                echo " "
+#                ;;
+#            "linuxmint")
+#                echo " "
+#                ;;
+#            "nixos")
+#                echo " "
+#                ;;
+#            "ol")
+#                echo "󰌷 "
+#                ;;
+#            "pop")
+#                echo " "
+#                ;;
+#            "raspbian")
+#                echo " "
+#                ;;
+#            "rhel")
+#                echo " "
+#                ;;
+#            "rocky")
+#                echo " "
+#                ;;
+#            "ubuntu")
+#                echo " "
+#                ;;
+#            *)
+#                echo " "  # Default Linux icon
+#                ;;
+#        esac
+#        ;;
+#    "Darwin")
+#        echo " "  # macOS Icon
+#        ;;
+#    "FreeBSD")
+#        echo " "  # FreeBSD Icon
+#        ;;
+#    "OpenBSD")
+#        echo " "  # OpenBSD Icon
+#        ;;
+#    "NetBSD")
+#        echo " "  # NetBSD Icon
+#        ;;
+#    "DragonFly")
+#        echo " "  # DragonFlyBSD Icon
+#        ;;
+#    *)
+#        echo "❓"
+#        ;;
+#esac
+#"""
+#when = true
+#format = " [$output](bold green) "
+#disabled = false
+
+[directory]
+style = "blue"
+read_only = " 󰌾"
+
+truncation_length = 4
+truncation_symbol = "□ "
+
+[character]
+success_symbol = "[🚀 ❯](purple)"
+error_symbol = "[💥 ❯](red)"
+vimcmd_symbol = "[❮](green)"
+
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "yellow"
+
+[localip]
+ssh_only = true
+format = "·[$localipv4](dimmed magenta)"
+disabled = false
+
+[username]
+style_user = "bright-yellow bold italic"
+style_root = "purple bold italic"
+format = " [$user]($style)"
+disabled = false
+show_always = true 
+
+[sudo]
+format = "[$symbol]($style)"
+style = "bold italic bright-purple"
+symbol = "#"
+disabled = false
+
+[docker_context]
+symbol = " "
+
+[git_branch]
+format = "[$branch]($style)"
+style = "bright-black"
+
+[git_status]
+format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
+style = "cyan"
+conflicted = "​"
+untracked = "​"
+modified = "​"
+staged = "​"
+renamed = "​"
+deleted = "​"
+stashed = "≡"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bright-black"
+
+[git_commit]
+tag_symbol = '  '
+
+[hostname]
+ssh_symbol = " "
+format = "[@$hostname]($style)"
+style = "bold blue"
+ssh_only = true 
+
+
+[shell]
+fish_indicator = '󰈺 '
+bash_indicator = '  '
+zsh_indicator = '󰊋 '
+powershell_indicator = '_'
+unknown_indicator = 'mystery shell'
+style = 'cyan bold'
+disabled = false
+
