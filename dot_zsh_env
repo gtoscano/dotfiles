@@ -1,0 +1,4 @@
+export DOCKER_GID=994
+export BITWARDEN_EMAIL=gtoscano@gmail.com
+export GITHUB_USERNAME=gtoscano
+

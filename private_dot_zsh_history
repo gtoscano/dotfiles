@@ -1,0 +1,222 @@
+mv .zshrc .zshrc_oh
+cat .zshrc
+cd .oh-my-zsh/
+cd templates
+cat zshrc.zsh-template
+cd tools
+s
+cd plugins
+cat autoenv/cat symfony/ls
+vi .zshrc_oh
+nvim .zshrc_oh
+cd .oh-my-zsh
+vi oh-my-zsh.sh
+cd themes
+sudo apt install fzf -y
+bash
+cd Downloads
+vi .zshrc
+nvim .zsh_keybindings
+cd .config/chezmoi
+cd dotfiles-latest
+cd /etc
+cd lua
+vi keymaps.lua
+nvim keymaps.lua
+vi options.lua
+vi plugins.lua
+cat init.lua
+vi dap_config.lua
+cp dap_config.lua dap_config.lua_back
+nvim dap_config.lua
+cat keymaps.lua
+cat chezmoistate.boltdb
+git add key.txt.age
+git add run_once_before_decrypt-private-key.sh.tmpl
+git add run_once_install_ansible.sh
+git add run_once_install_ohmyzsh.sh
+mv nvim nvim2
+chezmoi apply --dry-run
+chezmoi diff
+cd /tmp
+cd tmp
+mkdir gtp
+cd gtp
+git branch
+git branch master
+git co master
+rm -fr dotfiles
+cd dotfiles
+git checkout master
+cp -r nvim ~/.local
+vi
+nvim
+cd ~/.local
+whoami
+mv nvim ../.config
+cd .nvim
+cd .local/share
+rm -fr .git
+cat run_once_install_ansible.sh
+cat run_once_install_ohmyzsh.sh
+vi ./chezmoi.toml
+nvim .chezmoiignore
+cd private_dot_config
+cd nvim
+cd dot_git
+rm -fr private_dot_config
+vi run_once_before_decrypt-private-key.sh.tmpl
+mv dot_zsh* ~/
+cat key.txt.age
+rm key.txt.age
+vi chezmoi.toml
+cat run_once_before_decrypt-private-key.sh.tmpl
+sl
+vi dot_zshprompt
+dc ghostty
+rm -fr ghostty
+dc .local
+cd .config/nvim
+rm -fr dot_git
+rm dot_gitignore
+cat README.md
+cd .local/share/chezmoi
+mv chezmoi chezmoi2
+git clone git@github.com:gtoscano/dotfiles.git
+mv dotfiles chezmoi
+cd ../chezmoi2
+mv * .chezmoiignore .gitignore ../chezmoi/
+ls -al
+rmdir chezmoi2
+cd chezmoi
+w
+chezmoi status
+git staus
+git add .
+docker run -it -v "$(pwd):/home/$(whoami)/.local/share/chezmoi" dotfiles /bin/bash --login
+vi README.md
+cd .config/
+cd nvim2
+cd plugin
+cd ../lua
+cat plugins.lua
+cd .config/nvim/lua
+cd core
+cd plugin_config
+nvim markdown.lua
+nvim .
+docker run -it -v "$(pwd):/home/$(whoami)/.local/share/chezmoi" bookworm-slim /bin/bash --login
+docker run -it -v "$(pwd):/home/$(whoami)/.local/share/chezmoi" debian:bookworkm-slimw /bin/bash --login
+docker run -it -v "$(pwd):/home/$(whoami)/.local/share/chezmoi" debian:bookworkm-slim /bin/bash --login
+docker run -it -v "$(pwd):/home/$(whoami)/.local/share/chezmoi" debian:bookworm-slim /bin/bash --login
+docker stop 1cb411490a46
+docker rm 1cb411490a46
+sapt install figlet
+figlet DotFiles
+chmod +x setup.sh
+snap list
+fg
+nvim chezmoi.toml
+bash setup.sh
+grep decrypt *
+mv run_once_before_decrypt-private-key.sh.tmpl not_run_once_before_decrypt-private-key.sh.tmpl
+git add not_run_once_before_decrypt-private-key.sh.tmpl
+git add setup.sh
+grep docker README.md
+mkdir docker
+mv Dockerfile docker
+cd Dock
+docker build -t gtoscano/deb-sudo:latest .
+docker login
+docker push gtoscano/deb-sudo:latest
+docker build -t gregoriotoscano/deb-sudo:latest .
+docker push gregoriotoscano/deb-sudo:latest
+docker ps -a
+docker images
+docker rmi gtoscano/deb-sudo
+head Dockerfile
+head setup.sh
+git add docker
+nvim README.md
+cd docker
+nvim Dockerfile
+docker build -t gregoriotoscano/dotfiles:latest .
+docker push gregoriotoscano/dotfiles:latest
+wget - https://raw.githubusercontent.com/gtoscano/dotfiles/refs/heads/main/setup.sh\
+
+cat setup.sh
+dc bi
+diff setup.sh setup.sh.1
+rm setup.sh.1
+docker run -it --rm gregoriotoscano/dotfiles:latest
+nvim setup.sh
+git commit -am "update"
+git status
+git push
+vi run_once_install_ohmyzsh.sh
+dc ../
+mv .bootstrap .playbooks
+mv inventory_kubernetes.ini not_processed
+cat install_cloudflared.yml
+nvim install_regolith_bookworm.yml
+nvim setup.yml
+cat setup.yml
+cat install_essentials.yml
+chezmoi cd
+nvim run_once_install_ansible.sh
+cd .config/fish
+cat config.fish
+w fish
+whereis fish
+chsh -s /usr/bin/fish\
+
+dc .fig
+cd functions
+cat load-secrets.fish
+nvim load-secrets.fish
+cd ..
+nvim .zsh_functions
+cat env_vars.fish
+nvim .zsh_env
+pwd
+nvim secrets.env
+cd fish
+nvim config.fish
+nvim env_vars.fish
+apt search inconsolata lgc nerd
+sapt install fonts-nerd-font-inconsolatalgc
+cd ghostty
+cd confi
+rm -fr themes
+nvim config
+echo $PATH
+cd .local/bin
+nvim .zshrc
+cd /etc/apt
+cd apt.conf.d/
+cd ../
+cd sources.list.d
+cd /usr/bin
+cat gnome-terminal.wrapper
+update-alternatives --config x-terminal-emulato
+update-alternatives --config x-terminal-emulator
+ls /var/lib/dpkg/alternatives/x-terminal-emulator
+echo /var/lib/dpkg/alternatives/x-terminal-emulator
+cd /var/lib/dpkg/alternatives/
+cat x-terminal-emulator
+cd
+update-alternatives\
+ --set x-terminal-emulator\
+ /home/gtoscano/.local/bin/ghostty
+cd .playbooks
+nvim install_ghostty.yml
+cp install_essentials.yml
+nvim install_essentials.yml
+sudo reboot
+fish
+cd .config
+ls
+sudo su
+ls
+nvim .zshrc
+ls

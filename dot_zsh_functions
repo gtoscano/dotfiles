@@ -1,0 +1,112 @@
+# ---[ Shell Functions ]-----------------------------------------------
+
+# Reload specified functions
+freload() {
+  for func in "$@"; do
+    unfunction "$func"
+    autoload -U "$func"
+  done
+}
+
+# Simple command-line calculator
+calc() {
+  awk "BEGIN { print $* }"
+}
+
+# Set environment variables (csh compatibility)
+setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" }
+
+# Encrypt a file with Age
+# Usage: encrypt_file <input_file> <output_file>
+# Example: encrypt_file file.env file.age
+encrypt_file() {
+    if [ $# -ne 2 ]; then
+        echo "Usage: encrypt_file <input_file> <output_file>"
+        return 1
+    fi
+    PUBLIC_KEY=$(age-keygen -y ~/.config/age/key.txt)
+    age -e -r "$PUBLIC_KEY" -o "$2" "$1"
+    echo "Encrypted $1 to $2"
+}
+
+# Decrypt a file with Age
+# Usage: decrypt_file <input_file> <output_file>
+# Example: decrypt_file file.age file.env
+decrypt_file() {
+    if [ $# -ne 2 ]; then
+        echo "Usage: decrypt_file <input_file> <output_file>"
+        return 1
+    fi
+    age -d -i ~/.config/age/key.txt -o "$2" "$1"
+    echo "Decrypted $1 to $2"
+}
+
+function load-secrets {
+  # Read the file line-by-line
+  while IFS='' read -r line || [[ -n "$line" ]]; do
+    # Skip empty lines
+    [[ -z "$line" ]] && continue
+
+    # Skip commented lines
+    [[ "$line" =~ ^# ]] && continue
+
+    # Skip lines without an "=" sign
+    if [[ ! "$line" =~ = ]]; then
+      continue
+    fi
+
+    # Split on the first '='
+    local key="${line%%=*}"
+    local val="${line#*=}"
+
+    # Export the key-value pair
+    export "${key}=${val}"
+  done < "$HOME/.config/secrets.env"
+}
+
+configure_prompt() {
+    prompt_symbol=@
+    # Skull emoji for root terminal
+    [ "$EUID" -eq 0 ] && prompt_symbol=💀
+    case "$PROMPT_ALTERNATIVE" in
+        twoline)
+            PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%B%F{%(#.red.blue)}%n'$prompt_symbol$'%m%b%F{%(#.blue.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
+            # Right-side prompt with exit codes and background processes
+            #RPROMPT=$'%(?.. %? %F{red}%B⨯%b%F{reset})%(1j. %j %F{yellow}%B⚙%b%F{reset}.)'
+            ;;
+        oneline)
+            PROMPT=$'${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%B%F{%(#.red.blue)}%n@%m%b%F{reset}:%B%F{%(#.blue.green)}%~%b%F{reset}%(#.#.$) '
+            RPROMPT=
+            ;;
+        backtrack)
+            PROMPT=$'${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%B%F{red}%n@%m%b%F{reset}:%B%F{blue}%~%b%F{reset}%(#.#.$) '
+            RPROMPT=
+            ;;
+    esac
+    unset prompt_symbol
+}
+
+toggle_oneline_prompt(){
+    if [ "$PROMPT_ALTERNATIVE" = oneline ]; then
+        PROMPT_ALTERNATIVE=twoline
+    else
+        PROMPT_ALTERNATIVE=oneline
+    fi
+    configure_prompt
+    zle reset-prompt
+}
+
+precmd() {
+    # Print the previously configured title
+    print -Pnr -- "$TERM_TITLE"
+
+    # Print a new line before the prompt, but only if it is not the first line
+    if [ "$NEWLINE_BEFORE_PROMPT" = yes ]; then
+        if [ -z "$_NEW_LINE_BEFORE_PROMPT" ]; then
+            _NEW_LINE_BEFORE_PROMPT=1
+        else
+            print ""
+        fi
+    fi
+}
+

@@ -1,0 +1,45 @@
+# ---[ Aliases ]--------------------------------------------------------
+
+# General
+alias clear='clear'
+alias ls='ls --color=auto -hF'
+alias ll='ls --color=auto -lhF'
+alias l='ls --color=auto -lAhF'
+
+# Directory Navigation
+alias cd..='cd ..'
+alias ...='cd ../..'
+alias cdc='cd ~ && clear'
+
+# SSH Shortcuts
+alias tunnel='ssh -L 8123:localhost:8123 148.247.201.78 -N'
+
+# Process Management
+alias pa='ps aux'
+
+# File Management
+alias mv='nocorrect mv'
+alias cp='nocorrect cp'
+alias mkdir='nocorrect mkdir'
+
+# Job Control
+alias pu='pushd'
+alias po='popd'
+alias j='jobs'
+alias d='dirs -v'
+
+# History
+alias h='history'
+
+# Miscellaneous
+alias mc='mc -bs'
+alias man='PAGER=less man -a'
+alias wcat='wget -q -O -'
+alias dog='wcat'
+alias -g L='less'
+alias -g M='more'
+alias -g H='head'
+alias -g T='tail'
+alias open='xdg-open &>/dev/null'
+alias ']'='xdg-open'
+alias sapt='sudo nala'
