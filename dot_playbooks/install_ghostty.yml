@@ -1,11 +1,10 @@
-# ansible-playbook ~/.bootstrap/install_docker.yml -i ~/.bootstrap/inventory.ini --ask-become-pass 
 # For localhost:
-#   ansible-playbook -i localhost, -c local install_docker.yml --ask-become-pass
+#   ansible-playbook -i localhost, -c local install_ghostty.yml --ask-become-pass
 # Another option for localhost is to use a localhost_inventory.yml
-#   ansible-playbook -i localhost_inventory.yml install_docker.yml --ask-become-pass
+#   ansible-playbook -i inventory_local.ini install_ghostty.yml --ask-become-pass
 #
-# For networked machines (using inventory.yml)
-#   ansible-playbook -i linux_inventory.yml install_docker.yml --ask-become-pass
+# For networked machines (using inventory_net.ini)
+#   ansible-playbook -i inventory_net.ini install_ghostty.yml --ask-become-pass
 
 # Note:
 #   It is not necessary to have --ask-become-pass if the user does not need password to become root.
@@ -25,7 +24,6 @@
 #    update-alternatives --query x-terminal-emulator
 #
 
-
 ---
 - name: Install essential packages and Ghostty
   hosts: all
@@ -37,7 +35,6 @@
     bin_path: "{{ home_dir }}/.local/bin"
     repo_url: "https://github.com/ghostty-org/ghostty.git"
   tasks:
-
     - name: Update APT cache
       ansible.builtin.apt:
         update_cache: yes
@@ -77,7 +74,6 @@
         version: main
       when: not ghostty_binary.stat.exists
 
-
     - name: Build Ghostty using Zig
       become: false
       shell: |
@@ -91,7 +87,7 @@
       register: ghostty_check
       changed_when: false
       failed_when: ghostty_check.rc != 0
-    
+
     - name: Debug Ghostty binary path
       ansible.builtin.debug:
         msg: "Ghostty binary exists at {{ bin_path }}/ghostty"
@@ -112,7 +108,7 @@
         x-terminal-emulator
         {{ bin_path }}/ghostty
         50
-      when:  bin_path + '/ghostty' not in x_terminal_emulator_status.stdout
+      when: bin_path + '/ghostty' not in x_terminal_emulator_status.stdout
 
     - name: Set Ghostty as the default x-terminal-emulator
       become: true

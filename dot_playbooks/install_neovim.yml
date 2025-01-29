@@ -1,14 +1,14 @@
-# ansible-playbook ~/.bootstrap/install_nvim.yml -i ~/.bootstrap/inventory.ini --ask-become-pass 
 # For localhost:
-#   ansible-playbook -i localhost, -c local install_nvim.yml --ask-become-pass
+#   ansible-playbook -i localhost, -c local install_neovim.yml --ask-become-pass
 # Another option for localhost is to use a localhost_inventory.yml
-#   ansible-playbook -i localhost_inventory.yml install_nvim.yml --ask-become-pass
+#   ansible-playbook -i inventory_local.ini install_neovim.yml --ask-become-pass
 #
-# For networked machines (using inventory.yml)
-#   ansible-playbook -i linux_inventory.yml install_nvim.yml --ask-become-pass
+# For networked machines (using inventory_net.ini)
+#   ansible-playbook -i inventory_net.ini install_neovim.yml --ask-become-pass
 
 # Note:
 #   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+#
 ---
 - name: Install Neovim on Linux
   hosts: all
@@ -20,7 +20,6 @@
     nvim_bin_path: "/opt/nvim-linux64/bin"
 
   tasks:
-
     - name: Ensure Python dependencies are installed
       ansible.builtin.apt:
         name:
@@ -33,7 +32,7 @@
       ansible.builtin.get_url:
         url: "{{ nvim_url }}"
         dest: "{{ nvim_temp_file }}"
-        mode: '0644'
+        mode: "0644"
       ignore_errors: true
       register: download_result
 
@@ -79,3 +78,22 @@
       ansible.builtin.debug:
         msg: "Neovim installed successfully: {{ nvim_version.stdout }}"
 
+    # -------------------------------------------------
+    # LazyVim Installation
+    # -------------------------------------------------
+
+    - name: Clone LazyVim starter configuration
+      ansible.builtin.git:
+        repo: "https://github.com/LazyVim/starter"
+        dest: "~/.config/nvim" # adjust if you don't want it in root's home
+        version: "HEAD"
+        force: yes
+      become: false # run as the local user, not root
+      when: nvim_binary.stat.exists
+
+    - name: Remove .git folder from LazyVim configuration
+      ansible.builtin.file:
+        path: "~/.config/nvim/.git"
+        state: absent
+      become: false
+      when: nvim_binary.stat.exists

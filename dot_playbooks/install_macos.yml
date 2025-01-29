@@ -1,4 +1,14 @@
-# ansible-playbook -i macos_inventory.yml install_macos.yml
+# For localhost:
+#   ansible-playbook -i localhost, -c local install_macos.yml --ask-become-pass
+# Another option for localhost is to use a localhost_inventory.yml
+#   ansible-playbook -i inventory_local.ini install_macos.yml --ask-become-pass
+#
+# For networked machines (using inventory_net.ini)
+#   ansible-playbook -i inventory_net.ini install_macos.yml --ask-become-pass
+
+# Note:
+#   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+#
 ---
 - name: Install packages on macOS remotely
   hosts: remote_macos
