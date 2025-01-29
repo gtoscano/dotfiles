@@ -45,8 +45,8 @@ echo "   The IP addresses of this server are:"
 hostname -I | tr ' ' '\n'
 echo
 echo "3. Copy the Public Key to this machine:"
-echo "   ssh-copy-id -i ~/.ssh/id_rsa $username@<REMOTE_HOST_IP_OR_HOSTNAME>"
+echo "   ssh-copy-id -i  ~/.ssh/id_rsa $username@<REMOTE_HOST_IP_OR_HOSTNAME>"
 echo
 echo "4. Test SSH access:"
-echo "   ssh -i ~/.ssh/id_rsa $username@<REMOTE_HOST_IP_OR_HOSTNAME>"
+echo "   ssh -i  ~/.ssh/id_rsa $username@<REMOTE_HOST_IP_OR_HOSTNAME>"
 echo "Done! You should now be able to SSH into this machine securely."

@@ -2,10 +2,10 @@
 # For localhost:
 #   ansible-playbook -i localhost, -c local install_cloudflared.yml --ask-become-pass
 # Another option for localhost is to use a localhost_inventory.yml
-#   ansible-playbook -i inventory_local.ini install_cloudflared.yml --ask-become-pass
+#   ansible-playbook -i inventory_local.yml install_cloudflared.yml --ask-become-pass
 #
-# For networked machines (using inventory_net.ini)
-#   ansible-playbook -i inventory_net.ini install_cloudflared.yml --ask-become-pass
+# For networked machines (using inventory_net.yml)
+#   ansible-playbook -i inventory_net.yml install_cloudflared.yml --ask-become-pass
 
 # Note:
 #   It is not necessary to have --ask-become-pass if the user does not need password to become root.

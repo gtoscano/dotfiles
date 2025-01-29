@@ -1,16 +1,16 @@
 # For localhost:
 #   ansible-playbook -i localhost, -c local install_kubernetes.yml --ask-become-pass
 # Another option for localhost is to use a localhost_inventory.yml
-#   ansible-playbook -i inventory_local.ini install_kubernetes.yml --ask-become-pass
+#   ansible-playbook -i inventory_local.yml install_kubernetes.yml --ask-become-pass
 #
-# For networked machines (using inventory_net.ini)
-#   ansible-playbook -i inventory_net.ini install_kubernetes.yml --ask-become-pass
+# For networked machines (using inventory_net.yml)
+#   ansible-playbook -i inventory_net.yml install_kubernetes.yml --ask-become-pass
 
 # Note:
 #   It is not necessary to have --ask-become-pass if the user does not need password to become root.
 #
 #
-# ansible-playbook ~/.bootstrap/install_kubernetes.yml -i ~/.bootstrap/inventory_kubernetes.ini --ask-become-pass
+# ansible-playbook ~/.bootstrap/install_kubernetes.yml -i ~/.bootstrap/inventory_kubernetes.yml --ask-become-pass
 # verify cluster
 # on the master node run:
 # kubectl get nodes
