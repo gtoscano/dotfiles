@@ -1,0 +1,83 @@
+# For localhost:
+#   ansible-playbook -i localhost, -c local install_yazi.yml --ask-become-pass
+# Another option for localhost is to use a localhost_inventory.yml
+#   ansible-playbook -i inventory_local.yml install_yazi.yml --ask-become-pass
+#
+# For networked machines (using inventory_net.yml)
+#   ansible-playbook -i inventory_net.yml install_yazi.yml --ask-become-pass
+
+# Note:
+#   It is not necessary to have --ask-become-pass if the user does not need password to become root.
+#
+#
+# Validation
+#
+#    Verify Installation:
+#        After running the playbook, confirm yazi is installed:
+#        yazi --version
+#
+#    Check PATH:
+#       Ensure /usr/local/bin is included in the system PATH
+#
+---
+- name: Install Yazi from source
+  hosts: all
+  become: false
+  remote_user: gtoscano # Run as the specified user
+  vars:
+    rustup_install_script: https://sh.rustup.rs
+    yazi_repo: https://github.com/sxyazi/yazi.git
+    yazi_bin_path: /usr/local/bin
+  tasks:
+    - name: Ensure required packages are installed
+      become: true
+      apt:
+        name:
+          - curl
+          - git
+          - build-essential
+          - gcc
+          - make
+        state: present
+        update_cache: yes
+
+    - name: Install Rust using rustup
+      shell: |
+        curl --proto '=https' --tlsv1.2 -sSf {{ rustup_install_script }} | sh -s -- -y
+      args:
+        creates: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
+
+    - name: Update Rust to the latest stable version
+      shell: |
+        source "{{ ansible_env.HOME }}/.cargo/env"
+        rustup update
+      args:
+        executable: /bin/bash
+
+    - name: Clone Yazi repository
+      git:
+        repo: "{{ yazi_repo }}"
+        dest: "/tmp/yazi"
+        version: main
+
+    - name: Build Yazi
+      shell: |
+        source {{ ansible_env.HOME }}/.cargo/env
+        {{ ansible_env.HOME }}/.cargo/bin/cargo build --release --locked
+      args:
+        chdir: /tmp/yazi
+
+    - name: Move Yazi binaries to /usr/local/bin
+      become: true
+      copy:
+        src: "/tmp/yazi/target/release/{{ item }}"
+        dest: "{{ yazi_bin_path }}/{{ item }}"
+        mode: "0755"
+      loop:
+        - yazi
+        - ya
+
+    - name: Clean up temporary files
+      file:
+        path: /tmp/yazi
+        state: absent

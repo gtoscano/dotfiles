@@ -24,6 +24,8 @@
     - name: Install packages
       ansible.builtin.apt:
         name:
+          - 7zip
+          - imagemagick
           - age
           - autoconf
           - btop
@@ -38,6 +40,7 @@
           - gcc
           - g++
           - htop
+          - jq
           - libbz2-dev
           - libreadline-dev
           - libssl-dev
@@ -49,10 +52,12 @@
           - make
           - ripgrep
           - patch
+          - poppler-utils
           - tmux
           - tk-dev
           - uuid-dev
           - yadm
+          - zoxide
           - zlib1g
           - zlib1g-dev
           - zsh

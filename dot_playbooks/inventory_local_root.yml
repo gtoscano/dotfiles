@@ -3,5 +3,8 @@ all:
     localhost:
       ansible_connection: local
       ansible_user: gtoscano
+      ansible_become: true
+      ansible_become_user: root
       ansible_environment:
         HOME: /home/gtoscano # Explicitly set the HOME environment variable
+        PATH: "/home/gtoscano/.cargo/bin:{{ ansible_env.PATH }}" # Include Rust binaries in the PATH
