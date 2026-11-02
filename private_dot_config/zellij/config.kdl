@@ -163,6 +163,13 @@ keybinds clear-defaults=true {
             }
             SwitchToMode "locked"
         }
+        bind "?" {
+            LaunchOrFocusPlugin "https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm" {
+                "LOAD_ZELLIJ_BINDINGS" "true"
+                floating true
+            }
+            SwitchToMode "locked"
+        }
     }
     shared_among "normal" "locked" {
         bind "Super left" { MoveFocusOrTab "left"; }
@@ -323,6 +330,7 @@ default_mode "locked"
 // Default: "default"
 // 
 // default_layout "compact"
+default_layout "dracula"
  
 // The folder in which Zellij will look for layouts
 // (Requires restart)
