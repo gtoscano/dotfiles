@@ -330,7 +330,6 @@ default_mode "locked"
 // Default: "default"
 // 
 // default_layout "compact"
-default_layout "dracula"
  
 // The folder in which Zellij will look for layouts
 // (Requires restart)
