@@ -122,3 +122,4 @@ load_secrets
 
 starship init fish | source
 
+set -x TERM xterm-256color

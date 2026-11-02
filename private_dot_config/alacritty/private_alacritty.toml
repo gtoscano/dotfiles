@@ -33,10 +33,10 @@ TERM = "xterm-256color"
 # TERM: screen-256color
 
 [font]
-size = 16
+size = 20 
 
 [font.normal]
-family = "DejaVuSansMono Nerd Font Mono"
+family = "Inconsolata LGC Nerd Font Mono"
 # family = "JetBrainsMono Nerd Font"
 # family = "FiraCode Nerd Font Mono"
 # family = "FiraCode Nerd Font Mono, Light"
