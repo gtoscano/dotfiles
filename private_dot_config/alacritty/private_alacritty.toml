@@ -73,8 +73,7 @@ multiplier = 3
 #  program: /bin/bash
 #  args:
 #    - --login
-[terminal.shell]
-program = "/bin/zsh"
+# No [terminal.shell]: use the login shell (fish), same as kitty and Ghostty
 # The 2 commands after login are needed to automatically attach to an existing tmux session
 # If no session exists, a new one is created
 #args = ["--login", "-c", "/opt/homebrew/bin/tmux attach || //opt/homebrew/bin/tmux"]
