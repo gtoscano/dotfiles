@@ -9,3 +9,9 @@ gtk-titlebar = false
 mouse-hide-while-typing = true
 window-decoration = false
 
+
+# Free Ctrl+Alt+arrows for Zellij (pane focus); Zellij manages the splits
+keybind = ctrl+alt+arrow_up=unbind
+keybind = ctrl+alt+arrow_down=unbind
+keybind = ctrl+alt+arrow_left=unbind
+keybind = ctrl+alt+arrow_right=unbind
