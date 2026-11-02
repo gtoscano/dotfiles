@@ -3,3 +3,4 @@
 .config/fish/fish_variables.bak-*
 .config/zellij/*.bak*
 .config/ghostty/*.bak*
+.config/fish/*.bak-*

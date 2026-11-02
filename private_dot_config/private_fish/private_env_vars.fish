@@ -58,6 +58,5 @@ set -gx LD_RUN_PATH /usr/local/lib $LD_RUN_PATH
 # Misc
 set -x BITWARDEN_EMAIL gtoscano@gmail.com
 set -x GITHUB_USERNAME gtoscano
-set -x EDITOR nvim
 
 # 
