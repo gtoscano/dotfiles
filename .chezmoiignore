@@ -1,3 +1,4 @@
 # Rewritten by fish itself; machine-specific (see conf.d/colors.fish, fish_plugins)
 .config/fish/fish_variables
 .config/fish/fish_variables.bak-*
+.config/zellij/*.bak*
