@@ -24,6 +24,7 @@ if status is-interactive
 
 end
 
+test -f ~/.fzf.fish; and source ~/.fzf.fish
 
 if type -q zoxide
     zoxide init fish | source

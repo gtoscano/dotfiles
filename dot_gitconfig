@@ -4,6 +4,10 @@
 	email = gtoscano@gmail.com
 [init]
 	defaultBranch = main
+[credential]
+	helper = store
+[pull]
+	rebase = true
 [credential "https://github.com"]
 	helper = 
 	helper = !/usr/bin/gh auth git-credential
